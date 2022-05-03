@@ -1,24 +1,4 @@
-cmake_minimum_required(VERSION 3.2)
-project(binapi)
 
-set(CMAKE_CXX_STANDARD 14)
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fsanitize=address")
-
-add_definitions(
-    -UNDEBUG
-    -DDTF_HEADER_ONLY
-)
-
-include_directories(
-    ./include
-)
-
-if (DEFINED ${BOOST_INCLUDE_DIR})
-    include_directories(
-        ${BOOST_INCLUDE_DIR}
-    )
-endif()
 
 set(BINAPI_HEADERS
     binapi/api.hpp
@@ -47,13 +27,18 @@ set(BINAPI_SOURCES
     src/websocket.cpp
 )
 
-add_executable(
-    ${PROJECT_NAME}
-    #
-    main.cpp
-    #
-    ${BINAPI_SOURCES}
-)
+
+project(binapi)
+
+
+if (DEFINED ${BOOST_INCLUDE_DIR})
+    include_directories(
+        ${BOOST_INCLUDE_DIR}
+    )
+endif()
+
+add_library(binapi STATIC ${BINAPI_SOURCES})
+target_include_directories(binapi PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
 
 if (DEFINED ${BOOST_LIB_DIR})
     target_link_libraries(
@@ -69,3 +54,14 @@ target_link_libraries(
     ssl
     pthread
 )
+
+# Include header files
+
+# Create shared library
+
+
+# Install library
+#install(TARGETS ${PROJECT_NAME} DESTINATION lib/${PROJECT_NAME})
+
+# Install library headers
+#install(FILES ${BINAPI_HEADERS} DESTINATION include/${PROJECT_NAME})
